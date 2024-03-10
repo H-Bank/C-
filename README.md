@@ -1,2 +1,4 @@
-# C-
+# C++
 C++ alapok
+
+## Típusok
