@@ -79,3 +79,40 @@ bool b = true;
 b = 56;
 ```
 Érdekesség, hogy lehet számot is megadni és ha nem 0, akkor igaz az értéke.
+
+### Referencia típus
+Lehet hivatkozni arra, hogy a memoriában hol van az adat.
+```
+int a = 5;
+int& b = a;
+```
+
+### Konstans érték
+Amikor létrehozzuk, csak akkor tudunk neki értéket adni és későbbiekben már nem lehet!
+```
+const int b = 6;
+```
+
+### konstans referencia
+```
+const int c = 6;
+const int& d = c;
+const int& f = 42;
+```
+
+### Pointerek
+Pl.:
+```
+int a = 5;
+std::cout << "a erteke: " << a << "a cime. " << &a << std::endl;
+int* p = &a; // p pointer egy int-re
+std::cout << p << std::endl;
+std::cout << *p << std::endl;
+
+const int b = 4;
+const int* pb = &b; //pb egy pointer, ami const
+
+int* const pa = &a; // pa egy conts pointer egy int-re
+
+const int* const pc = nullptr;
+```
