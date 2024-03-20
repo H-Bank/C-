@@ -171,6 +171,9 @@ int sizeOfT = sizeof(t) / sizeof(t[0]);
 Létrehozása: (int helyett lehet más típust használni)
 ```
 std::vector<int> v;
+std::vector<int> v(10); //10 lesz a tárhyle
+std::vector<int> v(10, 5); //10 elem lesz és az összes 5 értékkel
+std::vector<int> v{1,2,3,4,5}; //adott értékkel feltöltés
 ```
 Méretnek lekérése:
 ```
@@ -183,6 +186,14 @@ v.push_back(10);
 Elem lekérése:
 ```
 v[0] //ez lesz a 10-es
+```
+Kapacitás: (0,1,2,4,8,16... tárolás)
+```
+v.capacity();
+```
+Kapacitás megadása: 
+```
+v.reserve(100);
 ```
 
 ## Vezérlési szerkezetek
@@ -213,6 +224,19 @@ switch ()
 ### Fori:
 ```
 for (int i = 0; i < 10; i++)
+{
+}
+```
+
+### For:
+```
+for (int item : lista)
+{
+}
+```
+Ezzel a lista elemek értékén lehet változtatni az alap listában.
+```
+for (int& item : lista)
 {
 }
 ```
