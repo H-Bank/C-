@@ -195,6 +195,14 @@ Kapacitás megadása:
 ```
 v.reserve(100);
 ```
+Rendezés:
+```
+std::sort(v.begin(), v.end());
+```
+csak az első x elemet:
+```
+std::sort(v.begin(), v.begin()+4);
+```
 
 ## Vezérlési szerkezetek
 ### Ha:
@@ -256,4 +264,76 @@ int i=0;
 do {
 i++;
 } while (i<10)
+```
+
+## Iterátorok
+### pl.:
+```
+std::vector<int> v{1,2,3,4,5,6,7};
+std::vector<int>::iterator it = v.begin(); //Első eleme a V vectornak
+std::vector<int>::iterator it = v.begin()+3; //Negyedik eleme a V vectornak
+std::vector<int>::iterator it2 = v.end(); //Utolsó+1 eleme a V vectornak
+```
+### Ciklusban jól használható:
+```
+for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+{
+//it-t lehet használni
+}
+```
+```
+for (std::vector<int>::iterator it = std::begin(v); it != std::end(v); ++it)
+{
+//it-t lehet használni
+}
+```
+### Lehet konstansnak állítani, de akkor nem lehet léptetni:
+```
+const std::vector<int>::iterator it = v.end();
+std::vector<int>::const_iterator it = v.end();
+```
+### Konstans ciklusban: (kiíratáshoz jól lehet használni)
+```
+for (std::vector<int>::const_iterator it = v.cbegin(); it != v.cend(); ++it)
+{
+  std::cout << *it << std::endl; 
+}
+```
+### Keresés: 
+(Ha nem talál akkor v.end lesz az értéke)
+```
+std::vector<int>::iterator it = std::find(v.begin(), v.end(), 12);
+```
+
+## Függvények
+### értékkel vissza térő
+Kb úgy működik mint c#-ban, de fontos, hogy mielőtt még hivatkoznánk rá, az előtt legyen a kódban, de ennek van egy megkerülése.
+Példa egy int-re:
+```
+int valami(const int x)
+{
+  return x;
+}
+//meghívása: valami(9);
+```
+Hivatkozási megkerülés:
+```
+int fg(const int x)
+
+int main()
+{
+  fg(9);
+}
+
+int fg(const int x)
+{
+  return x;
+}
+```
+Konstans változó megadása:
+```
+int valami(const int x, const int n=2)
+{
+  return x;
+}
 ```
