@@ -1,6 +1,11 @@
 # C++
 C++ alapok
 
+## Működés
+1. Előfordítás
+2. Fordítás
+3. Linkelés
+
 ## Main
 Ez egy függvény, ami szám típussal tér vissza. Ha 0, akkor minden rendben lefutott, de ha 0-tól eltérő a szám, akkor hiba történt futás közben.
 ```
@@ -337,3 +342,174 @@ int valami(const int x, const int n=2)
   return x;
 }
 ```
+
+## Névterek
+Külön névtereket lehet létrehozni, amiben elemekre lehet hivatkozni. Lehet egy névtérben több névteret létrehozni.
+```
+namespace a
+{
+  void f()
+  {
+    //
+  }
+}
+```
+Havatkozás a fenti fg-re:
+```
+a::f();
+```
+
+## Véletlenszám generálás
+Pl.:
+```
+#include <random>
+
+int main()
+{
+  std::random_device rD;
+  std::default_random_engine rE(rD());
+  std::uniform_int_distribution<int> uniform_dist(1,10);
+
+  int rnd = uniform_dist(rE);
+
+  std::normal_distribution<double> normal_dist(0,1);
+
+  double drnd = normal_dist(rE);
+} 
+```
+
+## Inline függvények
+Ahol meghívjük ezt a fg-t, oda bekerül a fg törzse, mert inline-ba történik. Fg kódja befordul az adott helyre.
+pl.:
+```
+inline int fg(const int x)
+{
+  return x;
+}
+```
+
+## OOP
+Osztályok létrehozása és "meghívása" (include).
+A "#include"-ot már többször is használtuk és az pont egy osztályt importál be, ami alapján tudunk a többi elemmel tovább foglalkozni.
+
+### Rekord
+Publikus adat tagjai vannak.
+```
+struct Student {
+  std::string name; //Ehhez include-álni kell a <string> beépített osztályt.
+  int age;
+
+  std::string ToString()
+  {
+    std::string s = "";
+    s += name;
+    s += ", ";
+    s += std::to_string(age);
+    return s;
+  }
+};
+
+int main()
+{
+  Student student01;
+  student01.name = "Hallgato Huba";
+  student01.age = 19;
+  std::cout << student01.ToString() << std::endl;
+}
+```
+
+
+### Szimpla osztály a main.cpp-ben:
+```
+class Name {
+public:
+  Name(const std::string& firstName, const std::string& lastName)
+  {
+    mFirstName = firstName;
+    mLastName = lastName;
+  }
+
+  void SetFirstName(const std::string& firstName)
+  {
+    mFirstName = firstName;
+  }
+
+  void SetLastName(const std::string& lastName)
+  {
+    mLastName = lastName;
+  }
+
+  std::string ToString()
+  {
+    return mFirstName + " " + mLastname;
+  }
+private:
+  std::string mFirstName; //Ehhez include-álni kell a <string> beépített osztályt.
+  std::string mLastName;
+}
+
+class Student {
+public:
+  Student()
+    : mName("Unknown", "Unknown")
+    , mAge(std::numeric_limits<int>::max()) //használni kell: #include <limits>
+  {}
+  Student(const std::string& firstName, const std::string& lastName, const int age)
+    : mName(firstName, lastName)
+    , mAge(age)
+  {
+    //Ezek akkor voltak jók, ha szöveg volt a name: this->mName = name; (*this).mName = name; mName = name;
+    //this->mAge = age;
+  }
+
+  ~Student() //Destructor
+  {
+  }
+
+  Name GetName() const
+  {
+    return mName;
+  }
+
+  int GetAge() const
+  {
+    return mAge;
+  }
+
+  Student& SetName(const std::string& firstName, const std::string& lastName)
+  {
+    mName.SetFirstName(firstName);
+    mName.SetLastName(lastName);
+    return *this;
+  }
+
+  Student& SetAge(const int age)
+  {
+    mAge = age;
+    return *this;
+  }
+
+  std::string ToString()
+  {
+    std::string s = "";
+    s += mName;
+    s += ", ";
+    s += std::to_string(mAge);
+    return s;
+  }
+
+private:
+  Name mName;
+  int mAge = 0;
+};
+
+int main()
+{
+  Student student01("Hallgato Huba", 19);
+  std::cout << student01.ToString() << std::endl;
+}
+```
+
+### Az előző felbontása fájlokra
+2 fajta fájl lesz, a .h és a .cpp.
+
