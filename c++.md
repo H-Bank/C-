@@ -513,3 +513,185 @@ int main()
 ### Az előző felbontása fájlokra
 2 fajta fájl lesz, a .h és a .cpp.
 
+#### Name osztály
+.h:
+```
+#pragma once
+#include <string>
+
+class Name {
+public:
+  Name(const std::string& firstName, const std::string& lastName);
+
+  void SetFirstName(const std::string& firstName);
+  void SetLastName(const std::string& lastName);
+
+  std::string ToString() const;
+
+private:
+  std::string mFirstName; //Ehhez include-álni kell a <string> beépített osztályt.
+  std::string mLastName;
+}
+```
+
+.cpp:
+```
+#include "name.h"
+
+Name::Name(const std::string& firstName, const std::string& lastName)
+{
+  mFirstName = firstName;
+  mLastName = lastName;
+}
+
+Name& Name::SetFirstName(const std::string& firstName)
+{
+  mFirstName = firstName;
+}
+
+Name& Name::SetLastName(const std::string& lastName)
+{
+  mLastName = lastName;
+}
+
+std::string Name::ToString() const
+{
+  return mFirstName + " " + mLastname;
+}
+```
+
+#### Student osztály
+.h:
+```
+#pragma once
+
+#include "name.h"
+
+class Student {
+public:
+  Student();
+  Student(const std::string& firstName, const std::string& lastName, const int age);
+
+  ~Student(); //Destructor
+
+  Name GetName() const;
+
+  int GetAge() const;
+
+  Student& SetName(const std::string& firstName, const std::string& lastName);
+
+  Student& SetAge(const int age);
+
+  std::string ToString();
+
+private:
+  Name mName;
+  int mAge = 0;
+};
+```
+
+.cpp:
+```
+#include "student.h"
+#include <iostream>
+
+Student::Student()
+    : mName("Unknown", "Unknown")
+    , mAge(std::numeric_limits<int>::max()) //használni kell: #include <limits>
+  {}
+Student::Student(const std::string& firstName, const std::string& lastName, const int age)
+  : mName(firstName, lastName)
+  , mAge(age)
+{
+  //Ezek akkor voltak jók, ha szöveg volt a name: this->mName = name; (*this).mName = name; mName = name;
+  //this->mAge = age;
+}
+
+Student::~Student() //Destructor
+{
+}
+
+Name Student::GetName() const
+{
+  return mName;
+}
+
+int Student::GetAge() const
+{
+  return mAge;
+}
+
+Student& Student::SetName(const std::string& firstName, const std::string& lastName)
+{
+  mName.SetFirstName(firstName);
+  mName.SetLastName(lastName);
+  return *this;
+}
+
+Student& Student::SetAge(const int age)
+{
+  mAge = age;
+  return *this;
+}
+
+std::string Student::ToString()
+{
+  std::string s = "";
+  s += mName;
+  s += ", ";
+  s += std::to_string(mAge);
+  return s;
+}
+```
+
+#### main
+```
+#include <iostream>
+#include <limits>
+#include <string>
+
+#include "student.h"
+
+int main()
+{
+  Student student01("Hallgato", "Huba", 19);
+  std::cout << student01.ToString() << std::endl;
+}
+```
+
+### Extra dolgok:
+
+#### Optional visszatérés
+pl.:
+```
+#include <optional>
+
+class osztaly
+{
+public:
+  std::optional<int> Top() const
+  {
+	  if (mTop == nullptr) return std::nullopt;
+	  return mTop->GetData();
+  }
+}
+```
+
+#### Operator változtatás
+Az összes operátorra külön lehet változtatást csinálni, hogy mit csináljon.
+```
+class osztaly
+{
+public:
+  Stack& operator=(const Stack& other)
+  {
+	  if (this == &other) return *this;
+
+	  if (other.mHead == nullptr) return *this;
+
+	  return *this;
+  }
+}
+```
+
+
