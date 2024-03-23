@@ -678,12 +678,23 @@ public:
 ```
 
 #### Operator változtatás
-Az összes operátorra külön lehet változtatást csinálni, hogy mit csináljon.
+Az összes operátorra külön lehet változtatást csinálni, hogy mit csináljon. Ezeknél is lehet használni a default és a delete kulcs szavakat:
 ```
 class osztaly
 {
 public:
-  Stack& operator=(const Stack& other)
+	osztaly& operator=(const osztaly& other) = default;
+
+	osztaly& operator=(const osztaly& other) = delete;
+}
+```
+
+##### Egyenlőség:
+```
+class osztaly
+{
+public:
+  Stack& operator=(const osztaly& other)
   {
 	  if (this == &other) return *this;
 
@@ -694,4 +705,125 @@ public:
 }
 ```
 
+##### Összeadás:
+```
+class osztaly
+{
+public:
+  	osztaly operator+(const osztaly& lhs, const osztaly&rhs)
+	{
+		osztaly result;
+		result.a = lhs.a + lhs.b;
+		return result;
+	}
+
+	osztaly operator+(const osztaly& other)
+	{
+		a += other.a;
+		return *this;
+	}
+
+	osztaly operator+(const double other)
+	{
+		a += other;
+		return *this;
+	}
+
+	friend osztaly operator+(const double lhs, const osztaly&rhs);
+}
+
+osztaly operator+8const double lhs, const osztaly&rhs)
+{
+	osztaly result;
+	result.a = lhs + rehs.a;
+	return result;
+}
+```
+
+##### Többinél
+Az összes többinél ugyan így lehet megcsinálni mint a kettő fentinél.
+pl.: (+=)
+```
+class osztaly
+{
+public:
+  	osztaly& operator+=(const osztaly& other)
+	{
+		a += other.a;
+		return *this;
+	}
+}
+```
+
+pl.: (==)
+```
+class osztaly
+{
+public:
+  	osztaly& operator==(const osztaly& other) const
+	{
+		return a==other.a;
+	}
+}
+```
+
+pl.: (<<)
+```
+class osztaly
+{
+public:
+  	friend std::ostream& operator<<(std::ostream& os, const osztaly& other);
+}
+std::ostream& operator<<(std::ostream& os, const osztaly& other)
+{
+	os << "(" << other.a << ")";
+	return os;
+}
+```
+
+pl.: (>>)
+```
+class osztaly
+{
+public:
+  	friend std::istream& operator>>(std::istream& ss, const osztaly& other);
+}
+std::istream& operator<<(std::istream& is, const osztaly& other)
+{
+	is >> other.a;
+	return is;
+}
+```
+
+#### Copy construktor
+Az = jel is egy ilyenm, amit felül lehet írni.
+```
+class osztaly
+{
+public:
+	osztaly(const osztaly& other) : mX(other.other) {}
+
+	osztaly(const osztaly& other) = default; //alapértelmezetten működik
+
+	osztaly(const osztaly& other) = delete; //nem lehet használni vagy ezt a konstrutort berakjuk a private hasonlót érünk el
+
+	osztaly& operator=(const osztaly& other)
+  	{
+	  	if (this == &other) return *this;
+
+	  	if (other.mHead == nullptr) return *this;
+		//többi opció...
+
+	  	return *this;
+  	}
+}
+```
+Érdemes fg paraméternél a memória helyet átadni, mert akkor, nem egy külön copy konstruktor fut le
+pl.:
+```
+void f(osztaly& o)
+{
+//valami
+}
+```
 
