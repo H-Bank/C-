@@ -1024,5 +1024,231 @@ Osztaly<T>::iterator Osztaly<T>::end()
 
 ```
 
+## Enum
+pl.:
+```
+enum Color {
+	Blue = 1,
+	Red = 2,
+	Green = 4,
+	Yellow = 8
+}
 
+int main()
+{
+	Color c = Green;
+}
+```
 
+Osztállyal:
+.h:
+```
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
+class Color {
+public:
+	enum EColor {
+		Blue,
+		Red,
+		Green,
+		Yellow
+	}
+
+	Color(const EColor color);
+	EColor get() const;
+	operator std::string() const;
+	friend std::istream& operator>>(std::istream& is, Color& rhs);
+	bool operator==(const Color& rhs) const;
+
+private:
+	EColor mColor;
+	static const std::unordered_map<EColor, std::string> eColorToString;
+};
+
+std::ostream& operator<<(std::ostream& os, const Color& rhs);
+```
+
+.cpp:
+```
+std::unordered_map<Color::EColor, std::string> Color::eColorToString = {
+	{Blue, "Blue"}, //first, second
+	{Red, "Red"},
+	{Green, "Green"},
+	{Yellow, "Yellow"}
+};
+
+Color::Color(const EColor color)
+	: _color(color)
+{
+}
+
+Color::EColor Color::get() const
+{
+	return _color;
+}
+
+bool Color::operator==(const Color& rhs) const
+{
+	return mColor == rhs;
+}
+
+Color::operator std::string() const
+{
+	/*switch (_color) {
+		case Blue:
+			return "Blue";
+		case Red:
+			return "Red";
+		case Green:
+			return "Green";
+		case Yellow:
+			return "Yellow";
+	}*/
+
+	std::undordered_map<Ecolor, std::string>::const_iterator it = eColorToString.find(_color);
+	if (it != eColorToString.end()) //Van találat
+	{
+		return it->second;
+	}
+	return "";
+}
+
+std::istream& operator>>(std::istream& is, Color& rhs)
+{
+	std::string s;
+	is >> s;
+	for (std::undordered_map<Color::EColor, std::string>::const_iterator it = Color::eColorToString.begin(); it != Color::eColorToString.end(); ++it)
+	{
+		if (s == it->second)
+		{
+			rhs.mColor = it->first;
+		}
+	}
+	return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const Color& rhs)
+{
+	os << std::string(rhs);
+	return os;
+}
+```
+
+## Input/output stream-ek
+
+### Egész double ki írása
+```
+#include <iostream>
+#include <iomanip>
+
+int main()
+{
+	double d = -123.456789;
+
+	std::cout << std::setprecision(8) << d << std::endl; //8 hosszúságig kiírja
+	std::cout << std::fixed << std::setprecision(15) << d << std::endl; //pontosan írja ki
+	std::cout << std::scientific << std::setprecision(8) << d << std::endl; // tizedes pont mögött lesz minden és lesz majd 10-es szorzás
+	std::cout << std::setw(20) << std::left << "Balra igazítva" << std::endl; //20 karakter és balra igazítva
+	std::cout << std::setw(20) << std::right << "Jobbra igazítva" << std::endl;
+	std::cout << std::setw(20) << std::internal << d << std::endl; //- és a szám külön van
+	std::cout << std::setw(20) << std::internal << std::setfill('*') << d << std::endl; //csillaggal tölti ki a maradék helyet.
+
+	std:: cout << std::hex << d << std::endl; //hexadecimálisan írja ki a számot
+}
+```
+
+### Bekérés
+```
+#include <iostream>
+#include <iomanip>
+
+int main()
+{
+	std::string s;
+	std::getline(std::cin, s);
+	std::getline(std::cin, s, 'd'); //csak a d-ig olvassa be
+
+	int a, b, c;
+	std::cin >> a >> b >> c;
+}
+```
+
+### kiírás fájlba
+```
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
+int main()
+{
+	std::ofstream outputFile("output.txt", std::ios::app); //nem muszály az app-os, ezzel meg marad a régi is, ha van
+	std::string s;
+	std::getline(std::cin, s);
+	while (s != "")
+	{
+		outputFile << s << std::endl;
+		std::getline(std::cin, s);
+	}
+	outputFile.close();
+}
+```
+
+Ide tartoznak az előzőkben nézett console-ra kiírások.
+Pl.:
+```
+//Osztály
+
+std::ostream& operator<<(std::ostream& os, const OsztalyNeve& rhs)
+{
+	os << std::string(rhs); //Osztály szerinti érték amit ki szeretnénk írni
+	return os;
+}
+```
+
+### Bekérés fájlból
+pl.:
+```
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
+int main()
+{
+	std::ifstream inputFile("input.txt");
+	if (inputFile.is_open())
+	{
+		while (!inputFile.eof())
+		{
+			std::string s;
+			std::getline(inputFile, s);
+		}
+	}
+
+	inputFile.close();
+}
+```
+
+### ostringstream
+pl.:
+```
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+
+int main()
+{
+	std::ostringstream oss;
+	oss << "hello" << 100 << std::fixed << 1e-6;
+
+	std::string s = oss.str();
+	std::cout << s << std::endl;
+
+	std::istringstream iss("Ez egy mondat.");
+
+	std::string s;
+	iss>> s; //csak az első szó lesz ott.
+}
+```
