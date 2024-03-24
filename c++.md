@@ -827,3 +827,202 @@ void f(osztaly& o)
 }
 ```
 
+## Generikus osztály létrehozása
+A példában egy T tipusú tömb tárolót hozunk létre.
+pl.:
+### .cpp:
+```
+#include <algorithm>
+#include <cstddef>
+#include <initializer_list>
+
+template<typename T>
+class Osztaly
+{
+public:
+	Osztaly() = default;
+	Osztaly(const size_t size);
+	Osztaly(const size_t size, const T& defaultValue);
+	Osztaly(const std::initializer_list<T>& list); //{1, 3, 4 , 5} ez a lista
+	Osztaly(const vector& other);
+	~Osztaly();
+
+	void operator=(const osztaly& other);
+	T operator[](const size_t index) const;
+	T& operator[](const size_t index);
+
+	void push_back(const T& newValue);
+
+private:
+	T* mArray = nullptr;
+	size_t mSize = 0; //Ehhez kell GET
+	size_t mCapacity = 0; //Ehhez kell GET
+}
+
+template<typename T>
+void Osztaly<T>::push_back(const T& newValue)
+{
+	if (mCapacity == mSize) {
+		if (mCapacity == 0) {
+			++mCapacity;
+			mArray = new T[mCapacity];
+		} else {
+			mCapacity <<=1; // 2-vel szorzás
+		}
+	}
+	mArray[mSize] = newValue;
+	++mSize;
+}
+
+template<typename T>
+void Osztaly<T>::operator=(const osztaly& other)
+{
+	if (this != &other)
+	{
+		delete[] mArray;
+		
+		mSize = other.mSize;
+		mCapacity = other.mCapacity;
+
+		mArray = new T[mSize];
+		std::copay(other.mArray, other.mArray + mSize, mArray);
+	}
+}
+
+template<typename T>
+Osztaly<T>::Osztaly(const Osztaly& other)
+	: mArray(new T[other.mSize])
+	, mSize(other.mSize)
+	, mCapacity(other.mCapacity)
+{
+	std::copay(other.mArray, other.mArray + mSize, mArray);
+}
+
+template<typename T>
+Osztaly<T>::Osztaly(const std::initializer_list<T>& list);
+	: mArray(new T[list.size()])
+	, mSize(list.size())
+	, mCapacity(mSize)
+{
+	std::copay(list.begin(), list.end(), mArray);
+}
+
+template<typename T>
+Osztaly<T>::Osztaly(const size_t size)
+	: mArray(new T[size])
+	, mSize(size)
+	, mCapacity(size)
+{
+}
+template<typename T>
+T Osztaly<T>::operator[](const size_t index)
+{
+	return mArrey[index];
+}
+
+template<typename T>
+T Osztaly<T>::operator[](const size_t index) const
+{
+	return mArrey[index];
+}
+
+template<typename T>
+Osztaly<T>::Osztaly(const size_t size, const T& defaultValue)
+	: mArray(new T[size])
+	, mSize(size)
+	, mCapacity(size)
+{
+	std::fill(mArray, mArray + size, defaultValue);
+}
+
+template<typename T>
+Osztaly<T>::~Osztaly()
+{
+	delete[] mArray;
+}
+```
+
+## Iterátor kiegészítő osztály
+pl.:
+```
+template<typename T>
+class Osztaly
+{
+public:
+	....
+	
+	class iterator
+	{
+	public:
+		iterator(T* current);
+		bool operator==(const iterator& other) const;
+		bool operator!=(const iterator& other) const;
+		iterator& operator++(); // prefix
+		iterator operator++(int); // postfix
+		T& operator*();
+	private:
+		t* mCurrent;
+	};
+
+	iterator begin();
+	iterator end();
+
+private:
+	...
+};
+
+template<typename T>
+osztaly<T>::iterator Osztaly<T>::iterator::operator++(int)
+{
+	T* temp = mCurrent;
+	++mCurrent;
+	return iterator(temp);
+}
+
+template<typename T>
+T& Osztaly<T>::iterator::operator*()
+{
+	return *mCurrent;
+}
+
+template<typename T>
+osztaly<T>::iterator& Osztaly<T>::iterator::operator++()
+{
+	++mCurrent;
+	return *this;
+}
+
+template<typename T>
+bool Osztaly<T>::iterator::operator!=(const iterator& other) const
+{
+	return !(*this == other);
+}
+
+template<typename T>
+bool Osztaly<T>::iterator::operator!=(const iterator& other) const
+{
+	return !(*this == other);
+}
+
+template<typename T>
+bool Osztaly<T>::iterator::operator==(const iterator& other) const
+{
+	return mCurrent == other.mCurrent;
+}
+
+template<typename T>
+Osztaly<T>::iterator Osztaly<T>::begin()
+{
+	return iterator(mArray);
+}
+
+template<typename T>
+Osztaly<T>::iterator Osztaly<T>::end()
+{
+	return iterator(mArray + mSize);
+}
+
+```
+
+
+
