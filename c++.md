@@ -1305,3 +1305,59 @@ Lelehet kérdenzi, hogy hányan mutatnak rá.
 ```
 
 ### Öröklődés
+Ami class1-ben van, az class2-ben is lesz, de csak a publicus adatagok.
+```
+class class1
+{
+public:
+	class1(const int a) : ma(a) {}
+	virtual ~Employee() {}
+	
+	virtual std::string toString() const
+	{
+		return std::to_string(ma);
+	}
+private:
+	int ma;
+}
+
+class class2 : public class1
+{
+public:
+	class2(const int a) : class1(a) {}
+	std::string toString() const override
+	{
+		return class1::toString() + "!";
+	}
+}
+
+int main()
+{
+	class2 c2;
+	class1 c1 = c2; //csak a class1 adatokat veszi át.
+
+	class1* c3 = new class2;
+	delete c3;
+
+	class2* c4 = dynamic_cast<class2*>(c1.get());
+
+	
+}
+```
+
+### Interface
+```
+class IInterface
+{
+public:
+	virtual void method() = 0; //pure virtual
+}
+
+class Out : public IInterface
+{
+public:
+	void method() override;
+}
+```
+
+
