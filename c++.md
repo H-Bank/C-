@@ -1252,3 +1252,56 @@ int main()
 	iss>> s; //csak az első szó lesz ott.
 }
 ```
+## Stack/heap, változók a heap-en
+### Stack
+Amikor egy változót hozunk létre alapból a stacken vannak. A main beli változók a stack alján és a main feletti methodús változok pedig a stacken a main változói felett lesznek.
+
+### Heap
+Heap-en belül valahol létrejön a változó, de a hivatkozást úgy lehet megoldani, hogy a Stack-en létrehozunk egy pointer változót. Például:
+```
+int main()
+{
+	int* a = new int(5);
+	delete a;
+}
+```
+A "delete a"-val lehet a Heap-ről törölni az adatot, de az "a" Stack-en megmarad a mutatója.
+
+```
+int main()
+{
+	int* b = new int[10];
+	delete b; //Ez csak az első elemet törli
+	delete[] b; //Ez az összeset
+}
+```
+
+## Smart pointerek
+### Okos pointer:
+```
+int main()
+{
+	std::unique_ptr<int> p1 = std::make_unique<int>(4);
+
+	std::unique_ptr<int> p2(std::move(p1));
+}
+```
+
+### Megosztott pointer
+Lelehet kérdenzi, hogy hányan mutatnak rá.
+```
+	std::shared_ptr<int> p1 = std::make_shared<int>(1);
+	std::cout << p1.use_count() << std::endl; //kimenet: 1
+	std::shared_ptr<int> p2(p1);
+	std::cout << p2.use_count() << std::endl; //kimenet: 2
+	std::cout << p1.use_count() << std::endl; //kimenet: 2
+
+	{
+		std::shared_ptr<int> p3(p1);
+		std::cout << p1.use_count() << std::endl; //kimenet: 3
+	} //p3 destructor
+
+	std::cout << p1.use_count() << std::endl; //kimenet: 2
+```
+
+### Öröklődés
