@@ -208,6 +208,21 @@ csak az első x elemet:
 ```
 std::sort(v.begin(), v.begin()+4);
 ```
+Beszúrás
+```
+v.insert(v.begin() + 3, 5);
+v.empace(v.begin() + 3, 5); //ott hozza létre
+```
+Elem törlése
+```
+v.pop_back(); //utlsó elemet kitörli, de azt érdemes kivenni is
+v.erase(v.begin() + 2); //2. elemet töröljük
+v.erase(v.begin() + 1, v.begin() + 3); //1-től 2-ig törli
+```
+Csere
+```
+v.swap(v1); //kicseréli az elemeket
+```
 
 ## Vezérlési szerkezetek
 ### Ha:
@@ -1569,5 +1584,20 @@ int main()
 	std::cout << s << std::endl;
 	RightTrim(s);
 	std::cout << s << std::endl;
+}
+```
+
+## Map
+2017-es c++!
+```
+#include <map>
+```
+```
+map<int,double> m1;
+m1.emplace(1,1.1);
+
+for (const auto& [_, item] : m1)
+{
+	std::cout << item->ToString() << std::endl;
 }
 ```
