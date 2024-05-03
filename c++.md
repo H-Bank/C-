@@ -1350,6 +1350,7 @@ int main()
 class IInterface
 {
 public:
+	virtual ~IInterface() = default; //Fontos, hogy működjön a polimorfizmus
 	virtual void method() = 0; //pure virtual
 }
 
@@ -1359,5 +1360,7 @@ public:
 	void method() override;
 }
 ```
+
+### Algoritmusok
 
 
