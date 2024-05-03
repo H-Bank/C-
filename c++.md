@@ -1304,7 +1304,7 @@ Lelehet kérdenzi, hogy hányan mutatnak rá.
 	std::cout << p1.use_count() << std::endl; //kimenet: 2
 ```
 
-### Öröklődés
+## Öröklődés
 Ami class1-ben van, az class2-ben is lesz, de csak a publicus adatagok.
 ```
 class class1
@@ -1345,7 +1345,7 @@ int main()
 }
 ```
 
-### Interface
+## Interface
 ```
 class IInterface
 {
@@ -1361,6 +1361,213 @@ public:
 }
 ```
 
-### Algoritmusok
+## Algoritmusok
+### Include
+```
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <random>
+#include <set>
+#include <string>
+#include <vector>
+```
 
+### Keresés
+Egy iteratort ad vissza, ami oda mutat, ahol eloszor megtalalhato a keresett ertek; ha nincs bent a keresett ertek, akkor end-et vissza:
+```
+std::vector<int> v{ 2, 3, 5, 7, 1, 43, -1, 0, 2, 5 };
+auto it = std::find(v.cbegin(), v.cend(), 0);
+if (it != v.cend()) {
+    std::cout << *it << std::endl;
+    std::cout << std::distance(v.cbegin(), it) << std::endl;
+}
+```
+Lehet karakteren belül is csinálni ezt:
+```
+std::string s{ "Hello, World!" };
+auto it2 = std::find(s.cbegin(), s.cend(), 'l');
+if (it2 != s.cend()) {
+    std::cout << std::distance(s.cbegin(), it2) << std::endl;
+}
+```
+De lehet csinálni bármilyen olyan adatszerkezetben, amiben van implementálva iterátor
+```
+std::vector<Person> persons{ {"Gipsz Jakab", 24}, {"Kiss Zsuzsi", 21}, {"Nagy Mariska", 27} };
+std::find(persons.cbegin(), persons.cend(), Person{ "Kiss Zsuzsi", 21 });
+```
 
+### Feltételes keresés
+Keresés egy olyan elemre, amire megvalosúl az első feltétel.
+```
+std::vector<int> v{ 2, 6, 9, 3, 5, 8, -1, 0, 2, -10 };
+auto it = std::find_if(v.cbegin(), v.cend(), [](const auto value) { return value < 0; });
+std::cout << std::distance(v.cbegin(), it) << std::endl;
+```
+
+### Eldöntés
+```
+std::vector<Person> persons{ {"Kiss Zsuzsi", 21}, {"Nagy Jenci", 34}, {"Hossz� Katinka", 25} };
+// Van-e legalább egy 30 évnél idősebb ember a vektorban?
+std::cout << "Age limit: ";
+uint16_t ageLimit;
+std::cin >> ageLimit;
+bool exists = std::any_of(persons.cbegin(), persons.cend(), [&ageLimit](const auto& p) { return p.mAge > ageLimit; });
+std::cout << std::boolalpha << exists << std::endl;
+// std::all_of //Minden az
+// std::none_of //Nincsen benne és ha nincs akkor igaz az értéke
+```
+
+### Sorozatszámítás, összegzés
+```
+std::vector<int> v{ 2, 3, 5, 1, 4, 8, 9 };
+std::cout << std::accumulate(v.cbegin(), v.cend(), 100) << std::endl; //10-as a kezdő érték, mennyitől adja össze
+// Elemek szorzata
+std::cout << std::accumulate(v.cbegin(), v.cend(), 1, [](const auto a, const auto b) { return a * b; }) << std::endl;
+std::vector<std::string> names{ "Nagy", "Balazs", "Sandor" };
+std::cout << std::accumulate(names.cbegin() + 1, names.cend(), names[0], [](const std::string& s1, const std::string& s2) {return s1 + " " + s2; });
+```
+
+### Megszámlálás és ha megszámlálás
+```
+std::vector<int> v{ 2, 3, 5, 1, 1, 8, 9, 1, 9, 8, 3, 1, 1, 0, 1 };
+auto counter = std::count(v.cbegin(), v.cend(), 1);
+std::cout << counter << std::endl;
+std::cout << std::count_if(v.cbegin(), v.cend(), [](const auto value) { return value % 2 == 0; }) << std::endl;
+```
+
+### Maximumkiválasztás/min
+```
+std::vector<int> v{ 2, 3, 5, 1, 1, 8, 9, 1, 9, 8, 3, 1, 1, 0, 1 };
+auto it = std::max_element(v.cbegin(), v.cend(), std::greater<int>());
+std::cout << std::distance(v.cbegin(), it) << std::endl;
+const auto [minIt, maxIt] = std::minmax_element(v.cbegin(), v.cend()); //2017-es c++-szal
+```
+
+### Kiválogatás
+```
+std::vector<int> w2;
+std::copy_if(v.cbegin(), v.cend(), std::back_inserter(w2), [](const auto item) { return item % 2 == 0; });
+std::for_each(w2.cbegin(), w2.cend(), [](const auto item) { std::cout << item << '\t'; });
+```
+
+### Másolás
+Másolásnál az első és a vég elemnek a mutatása kell
+```
+std::vector<int> v{ 3, 6, 9, 1, 0, 78, 3, 1, 9, 0 };
+std::vector<int> w;
+std::copy(v.cbegin(), v.cend(), std::back_inserter(w));
+std::for_each(w.cbegin(), w.cend(), [](const auto item) { std::cout << item << '\t'; });
+std::cout << std::endl;
+
+int a[] = { 1, 2, 3, 4, 5 };
+std::vector<int> v2;
+std::copy(a, a + 5, std::back_inserter(v2));
+std::for_each(v2.cbegin(), v2.cend(), [](const auto item) { std::cout << item << '\t'; });
+```
+
+### Módosított másolás
+```
+std::vector<int> v{ 2, 3, 5, 7, 11 };
+std::vector<int> w;
+std::transform(v.cbegin(), v.cend(), std::back_inserter(w), [](const auto item) { return item * item; });
+std::for_each(w.cbegin(), w.cend(), [](const auto item) { std::cout << item << '\t'; });
+```
+
+### Szétválogatás - partícionális
+Az adott tömbön belül rendez és amit vissza kapunk az adott helyik rendezés.
+```
+std::vector<int> v{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+const auto it = std::partition(v.begin(), v.end(), [](const auto item) { return item % 2 == 0; });
+std::for_each(v.cbegin(), v.cend(), [](const auto item) { std::cout << item << '\t'; });
+std::cout << std::endl << std::distance(v.begin(), it) << std::endl;
+bool isPartitioned = std::is_partitioned(v.cbegin(), v.cend(), [](const auto item) { return item % 2 == 0; });
+std::cout << std::boolalpha << isPartitioned << std::endl;
+```
+
+### Rendezés
+```
+std::vector<int> v{ 1, 2, 3, 4, 4, 4, 6, 7, 8, 9, 10 };
+std::sort(v.begin(), v.end());
+bool b = std::is_sorted(v.cbegin(), v.cend()); //Ha az akkor igazzal tér vissza
+std::for_each(v.cbegin(), v.cend(), [](const auto item) { std::cout << item << '\t'; });
+```
+
+### Random elem keverés
+```
+std::vector<int> v{ 1, 2, 3, 4, 4, 4, 6, 7, 8, 9, 10 };
+std::default_random_engine engine;
+std::shuffle(v.begin(), v.end(), engine);
+std::for_each(v.cbegin(), v.cend(), [](const auto item) { std::cout << item << '\t'; });
+```
+
+### Bináris keresés
+```
+std::vector<int> v{ 1, 2, 3, 4, 4, 4, 6, 7, 8, 9, 10 };
+bool b = std::binary_search(v.cbegin(), v.cend(), 4);
+```
+
+### Az első ami kisebb vagy egyenlő, nagyobb
+```
+std::vector<int> v{ 1, 2, 3, 4, 4, 4, 6, 7, 8, 9, 10 };
+const auto lowerIt = std::lower_bound(v.cbegin(), v.cend(), 2); // az els� olyan elem index�t, amely >=, mint a keresett
+const auto upperIt = std::upper_bound(v.cbegin(), v.cend(), 6); // az els� olyan elem index�t, amely <, mint a keresett
+std::for_each(lowerIt, upperIt, [](const auto item) {std::cout << item << '\t'; }); // Kettő közötti elemeket írja ki
+```
+
+### Halmaz műveletek
+Alapból rendezett listán lehet megcsinálni, de ezt megcsinálja a "set".
+```
+std::set<int> s1{ 2, 4, 1, 2, 1, 4, 2, 1, 3 };
+std::set<int> s2{ 1, 5, 8, 9, 3, 2 };
+std::vector<int> sResult;
+std::set_intersection(s1.cbegin(), s1.cend(), s2.cbegin(), s2.cend(), std::back_inserter(sResult));
+// set_union, set_difference, set_symmetric_difference
+```
+
+### Azonos elemek törlése
+```
+template<typename T>
+void RemoveDuplication(std::vector<T>& v)
+{
+    if (!std::is_sorted(v.cbegin(), v.cend())) {
+        std::sort(v.begin(), v.end());
+    }
+
+    auto it = std::unique(v.begin(), v.end()); // akkor működik, ha a v rendezett
+    v.erase(it, v.end());
+}
+
+int main()
+{
+	std::vector<int> v{ 2, 5, 12, 2, 1, 5, 6, 3, 5, 6, 1 };
+	RemoveDuplication(v);
+	std::for_each(v.cbegin(), v.cend(), [](const auto item) { std::cout << item << '\t'; });
+}
+```
+
+### felesleges szóköz, enter, tabulátor kiszedése
+```
+void LeftTrim(std::string& s)
+{
+    const auto it = std::find_if(s.cbegin(), s.cend(), [](const auto item) { return !std::isspace(item); });
+    s.erase(s.begin(), it);
+}
+
+void RightTrim(std::string& s)
+{
+    std::reverse(s.begin(), s.end());
+    LeftTrim(s);
+    std::reverse(s.begin(), s.end());
+}
+
+int main()
+{
+	std::string s{ "\n\r\t   \n\tHello, World!\n\n\n" };
+	LeftTrim(s);
+	std::cout << s << std::endl;
+	RightTrim(s);
+	std::cout << s << std::endl;
+}
+```
