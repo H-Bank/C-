@@ -1593,11 +1593,73 @@ int main()
 #include <map>
 ```
 ```
-map<int,double> m1;
+std::map<int,double> m1;
 m1.emplace(1,1.1);
 
 for (const auto& [_, item] : m1)
 {
 	std::cout << item->ToString() << std::endl;
 }
+```
+
+## Fileból olvasás
+Split fügvénnyel. A data.txt-t ott kell elhelyezni, ahol vannak a header, cpp file-ok.
+```
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+#include <map>
+
+std::vector<std::string> Split(const std::string& s)
+{
+	std::vector<std::string> result;
+
+	std::string ss = s;
+	int n = 2;
+	while (n--) {
+		const auto pos = ss.find(';');
+		result.push_back(ss.substr(0, pos));
+		ss = ss.substr(pos + 1);
+	}
+	result.push_back(ss);
+
+	return result;
+}
+
+int main()
+{
+	std::map<std::string, double> m1;
+	std::map<std::string, int> m2;
+	std::ifstream file("data.txt");
+
+	while (!file.eof()) {
+		std::string line;
+		std::getline(file, line);
+
+		const auto splitted = Split(line.substr(0));
+		const std::string desc = splitted[0];
+		const double dnumber = std::stod(splitted[1]);
+		const size_t number = std::stoi(splitted[2]);
+
+		m1.emplace(desc, dnumber);
+		m2.emplace(desc, number);
+	}
+
+	std::cout << "Map1:" << std::endl;
+	for (const auto& [item1, item2] : m1)
+	{
+		std::cout << item1 << " | " << item2 << std::endl;
+	}
+	std::cout << "Map2:" << std::endl;
+	for (const auto& [item1, item2] : m2)
+	{
+		std::cout << item1 << " | " << item2 << std::endl;
+	}
+	int sum = m2["Elso sor"] + m2["Masodik sor"];
+	std::cout << "Sum:" << sum << std::endl;
+}
+
 ```
